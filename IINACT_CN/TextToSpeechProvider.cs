@@ -2,7 +2,7 @@ using System.Speech.Synthesis;
 using System.Web;
 using NAudio.Wave;
 
-namespace IINACT;
+namespace IINACT_CN;
 
 internal class TextToSpeechProvider
 {

@@ -1,4 +1,4 @@
-namespace IINACT.Network;
+namespace IINACT_CN.Network;
 
 internal static class GameServerTime
 {

@@ -1,6 +1,6 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 
-namespace IINACT.Network;
+namespace IINACT_CN.Network;
 
 public static class SpanExtensions
 {

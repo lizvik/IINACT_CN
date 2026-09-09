@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IINACT", "IINACT\IINACT.csproj", "{260F5F39-62F5-40B6-B2B5-5FCE80363DA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IINACT_CN", "IINACT_CN\IINACT_CN.csproj", "{260F5F39-62F5-40B6-B2B5-5FCE80363DA7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotACT", "NotACT\NotACT.csproj", "{0DCFADA7-DBF4-476E-9B15-5C5DE32DCBA6}"
 EndProject

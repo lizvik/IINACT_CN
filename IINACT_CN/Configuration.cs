@@ -2,13 +2,13 @@ using Dalamud.Configuration;
 using Dalamud.Plugin;
 using Newtonsoft.Json;
 
-namespace IINACT;
+namespace IINACT_CN;
 
 [Serializable]
 public class Configuration : IPluginConfiguration
 {
     [JsonIgnore]
-    public string DefaultLogFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "IINACT");
+    public string DefaultLogFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "IINACT_CN");
     private string? logFilePath;
 
     [JsonIgnore]

@@ -1,4 +1,4 @@
-name: IINACT build
+name: IINACT_CN build
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: 10.0.x
     - name: Download Dalamud
       shell: pwsh
       run: |
@@ -29,33 +29,33 @@ jobs:
     - name: Prepare Build Artifact
       shell: pwsh
       run: |
-        Copy-Item "IINACT/bin/Release/win-x64/IINACT/latest.zip" -Destination "IINACT.zip"
-        Expand-Archive -Force IINACT.zip Artifact
-    - name: Upload IINACT
+        Copy-Item "IINACT_CN/bin/Release/win-x64/IINACT_CN/latest.zip" -Destination "IINACT_CN.zip"
+        Expand-Archive -Force IINACT_CN.zip Artifact
+    - name: Upload IINACT_CN
       uses: actions/upload-artifact@v4
       with:
-        name: IINACT
+        name: IINACT_CN
         path: Artifact/*
     - name: Update repo.json if needed
       shell: pwsh
       run: |
         $repo = Get-Content 'repo.json' -raw | ConvertFrom-Json
-        $build = Get-Content 'IINACT/bin/Release/win-x64/IINACT/IINACT.json' -raw | ConvertFrom-Json
+        $build = Get-Content 'IINACT_CN/bin/Release/win-x64/IINACT_CN/IINACT_CN.json' -raw | ConvertFrom-Json
         if ($repo.AssemblyVersion -eq $build.AssemblyVersion) {
           Exit
         }
         Write-Output "RELEASE_VERSION=$($build.AssemblyVersion)" >> $env:GITHUB_ENV
         $repo.AssemblyVersion = $repo.TestingAssemblyVersion = $build.AssemblyVersion
-        $repo.DownloadLinkInstall = 'https://github.com/marzent/IINACT/releases/download/v' + $repo.AssemblyVersion + '/IINACT.zip'
-        $repo.DownloadLinkTesting =  'https://github.com/marzent/IINACT/releases/download/v' + $repo.TestingAssemblyVersion + '/IINACT.zip'
+        $repo.DownloadLinkInstall = 'https://github.com/tinnate/IINACT_CN/releases/download/v' + $repo.AssemblyVersion + '/IINACT_CN.zip'
+        $repo.DownloadLinkTesting =  'https://github.com/tinnate/IINACT_CN/releases/download/v' + $repo.TestingAssemblyVersion + '/IINACT_CN.zip'
         $repo.DownloadLinkUpdate = $repo.DownloadLinkInstall
         $repo | ConvertTo-Json | % { "[`n" + $_ + "`n]" } | Set-Content 'repo.json'
     - name: Create Release
       if: ${{ env.RELEASE_VERSION != '0.0.0.0' }}
       uses: softprops/action-gh-release@v1
       with:
-        files: IINACT.zip
-        name: IINACT ${{ env.RELEASE_VERSION }}
+        files: IINACT_CN.zip
+        name: IINACT_CN ${{ env.RELEASE_VERSION }}
         tag_name: v${{ env.RELEASE_VERSION }}
         prerelease: false
         append_body: true

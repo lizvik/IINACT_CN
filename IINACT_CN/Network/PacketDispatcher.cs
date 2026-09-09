@@ -1,5 +1,5 @@
-﻿#pragma warning disable CS0169 // Field is never used
-namespace IINACT.Network;
+#pragma warning disable CS0169 // Field is never used
+namespace IINACT_CN.Network;
 
 public unsafe struct PacketDispatcher
 {

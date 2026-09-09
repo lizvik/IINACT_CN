@@ -1,6 +1,6 @@
-﻿using System.Reflection;
+using System.Reflection;
 
-namespace IINACT;
+namespace IINACT_CN;
 
 public static class PrivateHelpers
 {

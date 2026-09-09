@@ -13,7 +13,7 @@ using Dalamud.Interface.Utility.Raii;
 using NAudio.Wave;
 using RainbowMage.OverlayPlugin.EventSources;
 
-namespace IINACT.Windows;
+namespace IINACT_CN.Windows;
 
 public class MainWindow : Window, IDisposable
 {
@@ -21,7 +21,7 @@ public class MainWindow : Window, IDisposable
 
     private int selectedOverlayIndex;
 
-    public MainWindow(Plugin plugin) : base($"IINACT v{plugin.Version}")
+    public MainWindow(Plugin plugin) : base($"IINACT_CN v{plugin.Version}")
     {
         SizeConstraints = new WindowSizeConstraints
         {

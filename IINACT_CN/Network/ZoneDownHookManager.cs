@@ -9,7 +9,7 @@ using Unscrambler.Constants;
 using Unscrambler.Unscramble;
 using Unscrambler.Unscramble.Versions;
 
-namespace IINACT.Network;
+namespace IINACT_CN.Network;
 
 public unsafe class ZoneDownHookManager : IDisposable
 {
@@ -19,6 +19,8 @@ public unsafe class ZoneDownHookManager : IDisposable
     private readonly byte[] keys = new byte[3];
     
     private readonly INotificationManager notificationManager;
+
+    private readonly Action<long, byte[]> processNetworkMessage;
 	private delegate nuint DownPrototype(byte* data, byte* a2, nuint a3, nuint a4, nuint a5);
 	
 	private readonly Hook<DownPrototype> zoneDownHook;
@@ -30,9 +32,11 @@ public unsafe class ZoneDownHookManager : IDisposable
 
 	public ZoneDownHookManager(
         INotificationManager notificationManager,
-		IGameInteropProvider hooks)
+		IGameInteropProvider hooks,
+        Action<long, byte[]> processNetworkMessage)
     {
         this.notificationManager = notificationManager;
+		this.processNetworkMessage = processNetworkMessage;
 		buffer = new SimpleBuffer(1024 * 1024);
         var multiScanner = new MultiSigScanner();
         var moduleBase = multiScanner.Module.BaseAddress;
@@ -153,7 +157,7 @@ public unsafe class ZoneDownHookManager : IDisposable
         notificationManager.AddNotification(new Notification
         {
             Content = content,
-            Title = "IINACT", 
+            Title = "IINACT_CN",
         });
         Plugin.Log.Debug($"[SendNotification] {content}");
     }
@@ -233,10 +237,9 @@ public unsafe class ZoneDownHookManager : IDisposable
         }
     }
 
-    private static void EnqueueToMachina(ReadOnlySpan<byte> data)
+    private void EnqueueToMachina(ReadOnlySpan<byte> data)
     {
-        var queue = Machina.FFXIV.Dalamud.DalamudClient.MessageQueue;
-        queue?.Enqueue((GameServerTime.LastSeverTimestamp, data.ToArray()));
+        processNetworkMessage(GameServerTime.LastSeverTimestamp, data.ToArray());
     }
     
     private static string GetRunningGameVersion()

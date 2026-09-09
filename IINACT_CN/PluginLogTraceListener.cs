@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace IINACT;
+namespace IINACT_CN;
 
 public class PluginLogTraceListener : TraceListener
 {

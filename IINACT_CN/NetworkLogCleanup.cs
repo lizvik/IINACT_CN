@@ -1,6 +1,6 @@
 using Advanced_Combat_Tracker;
 
-namespace IINACT;
+namespace IINACT_CN;
 
 internal static class NetworkLogCleanup
 {

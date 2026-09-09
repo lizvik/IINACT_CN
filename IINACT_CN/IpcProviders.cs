@@ -2,7 +2,7 @@ using System.Reflection;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Ipc;
 
-namespace IINACT;
+namespace IINACT_CN;
 
 internal class IpcProviders : IDisposable
 {
@@ -24,18 +24,18 @@ internal class IpcProviders : IDisposable
     
     internal IpcProviders(IDalamudPluginInterface pluginInterface)
     {
-        GetVersion = pluginInterface.GetIpcProvider<Version>("IINACT.Version");
-        GetIpcVersion = pluginInterface.GetIpcProvider<Version>("IINACT.IpcVersion");
+        GetVersion = pluginInterface.GetIpcProvider<Version>("IINACT_CN.Version");
+        GetIpcVersion = pluginInterface.GetIpcProvider<Version>("IINACT_CN.IpcVersion");
         
-        CreateSubscriber = pluginInterface.GetIpcProvider<string, bool>("IINACT.CreateSubscriber");
-        CreateLegacySubscriber = pluginInterface.GetIpcProvider<string, bool>("IINACT.CreateLegacySubscriber");
-        Unsubscribe = pluginInterface.GetIpcProvider<string, bool>("IINACT.Unsubscribe");
+        CreateSubscriber = pluginInterface.GetIpcProvider<string, bool>("IINACT_CN.CreateSubscriber");
+        CreateLegacySubscriber = pluginInterface.GetIpcProvider<string, bool>("IINACT_CN.CreateLegacySubscriber");
+        Unsubscribe = pluginInterface.GetIpcProvider<string, bool>("IINACT_CN.Unsubscribe");
         
-        GetServerRunning = pluginInterface.GetIpcProvider<bool>("IINACT.Server.Listening");
-        GetServerPort = pluginInterface.GetIpcProvider<int>("IINACT.Server.Port");
-        GetServerIp = pluginInterface.GetIpcProvider<string>("IINACT.Server.Ip");
-        GetServerSslEnabled = pluginInterface.GetIpcProvider<bool>("IINACT.Server.SslEnabled");
-        GetServerUri = pluginInterface.GetIpcProvider<Uri?>("IINACT.Server.Uri");
+        GetServerRunning = pluginInterface.GetIpcProvider<bool>("IINACT_CN.Server.Listening");
+        GetServerPort = pluginInterface.GetIpcProvider<int>("IINACT_CN.Server.Port");
+        GetServerIp = pluginInterface.GetIpcProvider<string>("IINACT_CN.Server.Ip");
+        GetServerSslEnabled = pluginInterface.GetIpcProvider<bool>("IINACT_CN.Server.SslEnabled");
+        GetServerUri = pluginInterface.GetIpcProvider<Uri?>("IINACT_CN.Server.Uri");
         
         Register();
     }

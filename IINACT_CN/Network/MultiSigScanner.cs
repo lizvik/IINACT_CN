@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -8,7 +8,7 @@ using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
 using Windows.Win32.System.Memory;
 
-namespace IINACT.Network;
+namespace IINACT_CN.Network;
 
 /// <summary>
 /// A SigScanner facilitates searching for memory signatures in a given ProcessModule.

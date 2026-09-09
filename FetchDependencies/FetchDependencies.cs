@@ -89,7 +89,7 @@ public class FetchDependencies
         catch
         {
             using var request = new HttpRequestMessage(HttpMethod.Get, "https://api.github.com/repos/ravahn/FFXIV_ACT_Plugin/releases/latest");
-            request.Headers.UserAgent.ParseAdd("IINACT/1.0");
+            request.Headers.UserAgent.ParseAdd("IINACT_CN/1.0");
             using var response = HttpClient.Send(request);
             response.EnsureSuccessStatusCode();
 

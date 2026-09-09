@@ -1,4 +1,4 @@
-﻿namespace IINACT.Network;
+namespace IINACT_CN.Network;
 
 internal class SimpleBuffer(int size)
 {

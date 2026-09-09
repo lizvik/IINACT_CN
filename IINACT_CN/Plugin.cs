@@ -6,22 +6,22 @@ using Dalamud.Interface.ImGuiFileDialog;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
-using IINACT.Network;
-using IINACT.Windows;
+using IINACT_CN.Network;
+using IINACT_CN.Windows;
 using Machina.FFXIV;
 using Machina.FFXIV.Headers.Opcodes;
 
-namespace IINACT;
+namespace IINACT_CN;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public sealed class Plugin : IDalamudPlugin
 {
-    public string Name => "IINACT";
+    public string Name => "IINACT_CN";
     public Version Version { get; }
 
     private const string MainWindowCommandName = "/iinact";
     private const string EndEncCommandName = "/endenc";
-    public readonly WindowSystem WindowSystem = new("IINACT");
+    public readonly WindowSystem WindowSystem = new("IINACT_CN");
     
     internal IDalamudPluginInterface PluginInterface { get; }
     internal ICommandManager CommandManager { get; }
@@ -77,8 +77,6 @@ public sealed class Plugin : IDalamudPlugin
                                              ? GameRegion.Chinese
                                              : GameRegion.Global);
 
-        var createZoneDownHookManager = Task.Run(() 
-            => new ZoneDownHookManager(NotificationManager, GameInteropProvider));
         Version = Assembly.GetExecutingAssembly().GetName().Version!;
 
         FileDialogManager = new FileDialogManager();
@@ -104,6 +102,8 @@ public sealed class Plugin : IDalamudPlugin
         Advanced_Combat_Tracker.ActGlobals.oFormActMain.LogFilePath = Configuration.LogFilePath;
 
         FfxivActPluginWrapper = new FfxivActPluginWrapper(Configuration, DataManager.Language, ChatGui, Framework, Condition);
+        ZoneDownHookManager = new ZoneDownHookManager(NotificationManager, GameInteropProvider,
+                                                       FfxivActPluginWrapper.ProcessNetworkMessage);
         Task.Run(() => NetworkLogCleanup.Cleanup(Configuration));
         OverlayPlugin = InitOverlayPlugin();
 
@@ -115,12 +115,12 @@ public sealed class Plugin : IDalamudPlugin
 
         CommandManager.AddHandler(MainWindowCommandName, new CommandInfo(OnCommand)
         {
-            HelpMessage = "Displays the IINACT main window"
+            HelpMessage = "Displays the IINACT_CN main window"
         });
 
         CommandManager.AddHandler(EndEncCommandName, new CommandInfo(OnCommand)
         {
-            HelpMessage = "Ends the current encounter IINACT is parsing"
+            HelpMessage = "Ends the current encounter IINACT_CN is parsing"
         });
 
         PluginInterface.UiBuilder.Draw += DrawUI;
@@ -134,7 +134,6 @@ public sealed class Plugin : IDalamudPlugin
         ClientState.EnterPvP += EnterPvP;
         ClientState.LeavePvP += LeavePvP;
 
-        ZoneDownHookManager = createZoneDownHookManager.Result;
     }
 
     public void Dispose()

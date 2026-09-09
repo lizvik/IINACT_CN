@@ -14,13 +14,15 @@ using FFXIV_ACT_Plugin.Memory;
 using FFXIV_ACT_Plugin.Memory.MemoryProcessors;
 using FFXIV_ACT_Plugin.Memory.MemoryReader;
 using FFXIV_ACT_Plugin.Memory.Models.Global;
+using FFXIV_ACT_Plugin.Network;
 using FFXIV_ACT_Plugin.Parse;
 using FFXIV_ACT_Plugin.Resource;
-using IINACT.Network;
+using IINACT_CN.Network;
+using Machina.Infrastructure;
 using Microsoft.MinIoC;
 using ACTWrapper = FFXIV_ACT_Plugin.Common.ACTWrapper;
 
-namespace IINACT;
+namespace IINACT_CN;
 
 public partial class FfxivActPluginWrapper : IDisposable
 {
@@ -34,6 +36,8 @@ public partial class FfxivActPluginWrapper : IDisposable
     private readonly Container iocContainer;
     private ISettingsMediator settingsMediator = null!;
     private readonly ParseMediator parseMediator;
+    private readonly ScanPackets scanPackets;
+    private readonly TCPConnection networkConnection = new();
 
     private readonly ServerTimeProcessor serverTimeProcessor;
     private readonly MobArrayProcessor mobArrayProcessor;
@@ -85,6 +89,7 @@ public partial class FfxivActPluginWrapper : IDisposable
         parseMediator = iocContainer.Resolve<ParseMediator>();
 
         ffxivActPlugin._dataCollection = iocContainer.Resolve<DataCollection>();
+        scanPackets = (ScanPackets)ffxivActPlugin._dataCollection._scanPackets;
 
         logOutput = ffxivActPlugin._dataCollection._logOutput;
         logFormat = ffxivActPlugin._dataCollection._logFormat;
@@ -163,6 +168,11 @@ public partial class FfxivActPluginWrapper : IDisposable
             chatGui.ChatMessage += OnChatMessage;
     }
 
+    public void ProcessNetworkMessage(long epoch, byte[] message)
+    {
+        scanPackets.NetworkMessageReceived(networkConnection, epoch, message);
+    }
+
     private void SetupSettingsMediator()
     {
         settingsMediator = ffxivActPlugin._dataCollection._settingsMediator;
@@ -170,7 +180,7 @@ public partial class FfxivActPluginWrapper : IDisposable
         DataCollectionSettings = new DataCollectionSettingsEventArgs
         {
             LogFileFolder = ActGlobals.oFormActMain.LogFilePath,
-            RegionID = Region.Global,
+            RegionID = ClientLanguage == Language.Chinese ? Region.Chinese : Region.Global,
             ProcessID = Environment.ProcessId
         };
         settingsMediator.DataCollectionSettings = DataCollectionSettings;
