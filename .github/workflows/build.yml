@@ -4,11 +4,22 @@ on:
   push:
     branches: [ "main" ]
 
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      RELEASE_VERSION: '0.0.0.0'
+      RELEASE_VERSION: ''
+      RELEASE_TAG: ''
+      TAG_EXISTS: 'false'
+      RELEASE_EXISTS: 'false'
+      REPO_CHANGED: 'false'
       DALAMUD_HOME: /tmp/dalamud
       DOTNET_NOLOGO: true
     steps:
@@ -36,42 +47,105 @@ jobs:
       with:
         name: IINACT_CN
         path: Artifact/*
-    - name: Update repo.json if needed
+    - name: Check release and update repo.json
       shell: pwsh
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
       run: |
         $repo = Get-Content 'repo.json' -raw | ConvertFrom-Json
         $build = Get-Content 'IINACT_CN/bin/Release/win-x64/IINACT_CN/IINACT_CN.json' -raw | ConvertFrom-Json
-        if ($repo.AssemblyVersion -eq $build.AssemblyVersion) {
-          Exit
+
+        $version = $build.AssemblyVersion
+        if ([string]::IsNullOrWhiteSpace($version)) {
+          throw 'The build manifest does not contain AssemblyVersion.'
         }
-        Write-Output "RELEASE_VERSION=$($build.AssemblyVersion)" >> $env:GITHUB_ENV
-        $repo.AssemblyVersion = $repo.TestingAssemblyVersion = $build.AssemblyVersion
-        $repo.DownloadLinkInstall = 'https://github.com/tinnate/IINACT_CN/releases/download/v' + $repo.AssemblyVersion + '/IINACT_CN.zip'
-        $repo.DownloadLinkTesting =  'https://github.com/tinnate/IINACT_CN/releases/download/v' + $repo.TestingAssemblyVersion + '/IINACT_CN.zip'
-        $repo.DownloadLinkUpdate = $repo.DownloadLinkInstall
-        $repo | ConvertTo-Json | % { "[`n" + $_ + "`n]" } | Set-Content 'repo.json'
+
+        $tag = "v$version"
+        $downloadUrl = "https://github.com/$env:GITHUB_REPOSITORY/releases/download/$tag/IINACT_CN.zip"
+        "RELEASE_VERSION=$version" >> $env:GITHUB_ENV
+        "RELEASE_TAG=$tag" >> $env:GITHUB_ENV
+
+        $headers = @{
+          Authorization = "Bearer $env:GITHUB_TOKEN"
+          Accept = 'application/vnd.github+json'
+          'X-GitHub-Api-Version' = '2022-11-28'
+        }
+
+        function Test-GitHubResource([string] $uri) {
+          $response = Invoke-WebRequest -Uri $uri -Headers $headers -SkipHttpErrorCheck
+          if ($response.StatusCode -eq 200) { return $true }
+          if ($response.StatusCode -eq 404) { return $false }
+          throw "GitHub API request failed with status $($response.StatusCode): $uri"
+        }
+
+        $encodedTag = [Uri]::EscapeDataString($tag)
+        $tagExists = Test-GitHubResource "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/git/ref/tags/$encodedTag"
+        $releaseExists = Test-GitHubResource "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/releases/tags/$encodedTag"
+        "TAG_EXISTS=$($tagExists.ToString().ToLowerInvariant())" >> $env:GITHUB_ENV
+        "RELEASE_EXISTS=$($releaseExists.ToString().ToLowerInvariant())" >> $env:GITHUB_ENV
+
+        Write-Host "Release version: $version"
+        Write-Host "Tag exists: $tagExists"
+        Write-Host "Release exists: $releaseExists"
+
+        $repoChanged = $false
+        if ($repo.AssemblyVersion -ne $version) {
+          $repo.AssemblyVersion = $version
+          $repoChanged = $true
+        }
+        if ($repo.TestingAssemblyVersion -ne $version) {
+          $repo.TestingAssemblyVersion = $version
+          $repoChanged = $true
+        }
+        if ($repo.DownloadLinkInstall -ne $downloadUrl) {
+          $repo.DownloadLinkInstall = $downloadUrl
+          $repoChanged = $true
+        }
+        if ($repo.DownloadLinkTesting -ne $downloadUrl) {
+          $repo.DownloadLinkTesting = $downloadUrl
+          $repoChanged = $true
+        }
+        if ($repo.DownloadLinkUpdate -ne $downloadUrl) {
+          $repo.DownloadLinkUpdate = $downloadUrl
+          $repoChanged = $true
+        }
+
+        if ($repoChanged) {
+          $json = $repo | ConvertTo-Json -Depth 10
+          "[`n$json`n]" | Set-Content 'repo.json' -Encoding utf8
+          "REPO_CHANGED=true" >> $env:GITHUB_ENV
+        }
+
+    - name: Create release tag
+      if: ${{ env.TAG_EXISTS != 'true' }}
+      run: |
+        git config user.name "Actions User"
+        git config user.email "actions@github.com"
+        git tag -a "${{ env.RELEASE_TAG }}" -m "IINACT_CN ${{ env.RELEASE_VERSION }}"
+        git push origin "${{ env.RELEASE_TAG }}"
+
     - name: Create Release
-      if: ${{ env.RELEASE_VERSION != '0.0.0.0' }}
+      if: ${{ env.RELEASE_EXISTS != 'true' }}
       uses: softprops/action-gh-release@v1
       with:
         files: IINACT_CN.zip
         name: IINACT_CN ${{ env.RELEASE_VERSION }}
-        tag_name: v${{ env.RELEASE_VERSION }}
+        tag_name: ${{ env.RELEASE_TAG }}
         prerelease: false
         append_body: true
         body_path: .github/release-notices.md
         generate_release_notes: true
         fail_on_unmatched_files: true
     - name: Commit repo.json
-      if: ${{ env.RELEASE_VERSION != '0.0.0.0' }}
+      if: ${{ env.REPO_CHANGED == 'true' }}
       run: |
-        git config --global user.name "Actions User"
-        git config --global user.email "actions@github.com"
+        git config user.name "Actions User"
+        git config user.email "actions@github.com"
         git fetch origin main
         git checkout main
         git add repo.json
-        git commit -m "[CI] updating repo.json for ${{ env.RELEASE_VERSION }}" || true
-        git push origin main   
+        git commit -m "[CI] updating repo.json for ${{ env.RELEASE_VERSION }}"
+        git push origin main
     
     
 

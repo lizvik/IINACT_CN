@@ -198,7 +198,7 @@ public unsafe class ZoneDownHookManager : IDisposable
         // Compression
         if (header.Compression != CompressionType.None)
         {
-            SendNotification($"A frame was compressed.");
+            SendNotification("检测到压缩数据帧。");
             return;
         }
         

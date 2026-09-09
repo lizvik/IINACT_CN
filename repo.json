@@ -1,11 +1,11 @@
 [
 {
-  "Author": "Usagi",
+  "Author": "Lizvik",
   "Name": "IINACT_CN",
   "InternalName": "IINACT_CN",
   "AssemblyVersion": "2.10.3.7",
   "TestingAssemblyVersion": "2.10.3.7",
-  "Description": "A plugin to run the FFXIV_ACT_Plugin in an ACT-like environment with a heavily modified port of Overlay Plugin for modern .NET",
+  "Description": "在现代 .NET 环境中运行 FFXIV_ACT_Plugin 的战斗解析插件，集成了深度修改的 Overlay Plugin。",
   "ApplicableVersion": "any",
   "RepoUrl": "https://github.com/tinnate/IINACT_CN",
   "Tags": [
@@ -16,7 +16,7 @@
   "DalamudApiLevel": 15,
   "LoadPriority": 0,
   "IconUrl": "https://raw.githubusercontent.com/tinnate/IINACT_CN/master/images/icon.png",
-  "Punchline": "A parsing plugin.",
+  "Punchline": "适用于国服的战斗解析插件。",
   "IsHide": "False",
   "IsTestingExclusive": "False",
   "DownloadLinkInstall": "https://github.com/tinnate/IINACT_CN/releases/download/v2.10.3.7/IINACT_CN.zip",

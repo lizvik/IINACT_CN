@@ -6,7 +6,7 @@
         <AssemblyName>IINACT_CN</AssemblyName>
         <RootNamespace>IINACT_CN</RootNamespace>
         <Product>IINACT_CN</Product>
-        <Description>A parsing plugin.</Description>
+        <Description>适用于国服的战斗解析插件。</Description>
         <Copyright></Copyright>
         <PackageProjectUrl>https://github.com/tinnate/IINACT_CN</PackageProjectUrl>
     </PropertyGroup>
