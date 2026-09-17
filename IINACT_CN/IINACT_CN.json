@@ -5,7 +5,7 @@
     "RepoUrl": "https://github.com/tinnate/IINACT_CN",
     "Description": "在现代 .NET 环境中运行 FFXIV_ACT_Plugin 的战斗解析插件，集成了深度修改的 Overlay Plugin。",
     "InternalName": "IINACT_CN",
-    "ApplicableVersion": "2026.09.01.0000.0000",
+    "ApplicableVersion": "2026.09.15.0000.0000",
     "Tags": [
         "parsing",
         "plugin",
