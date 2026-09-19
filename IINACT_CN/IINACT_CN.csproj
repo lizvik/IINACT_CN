@@ -2,7 +2,7 @@
     <PropertyGroup>
         <Authors>Lizvik</Authors>
         <Company>Moo</Company>
-        <Version>2.10.3.8</Version>
+        <Version>2.10.3.9</Version>
         <AssemblyName>IINACT_CN</AssemblyName>
         <RootNamespace>IINACT_CN</RootNamespace>
         <Product>IINACT_CN</Product>
