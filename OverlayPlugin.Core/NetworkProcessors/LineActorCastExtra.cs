@@ -24,9 +24,15 @@ namespace RainbowMage.OverlayPlugin.NetworkProcessors
                 float z = FFXIVRepository.ConvertUInt16Coordinate(Get<UInt16>("PosY"));
                 // for rotation, the packet uses '0' as north, and each increment is 1/65536 of a CCW turn, while
                 // in-game uses 0=south, pi/2=west, +/-pi=north
-                // Machina thinks this is a float but that appears to be incorrect, so we have to reinterpret as
-                // a UInt16
-                double h = FFXIVRepository.ConvertHeading(Get<UInt16>("Rotation"));
+                // Machina declares the CN rotation as a float, but the packet still stores a UInt16
+                // heading in its low 16 bits. Global and Korean structs declare it as UInt16.
+                ushort rotation = Get<object>("Rotation") switch
+                {
+                    ushort value => value,
+                    float value => unchecked((ushort)BitConverter.SingleToInt32Bits(value)),
+                    _ => throw new InvalidOperationException("Unsupported ActorCast rotation type"),
+                };
+                double h = FFXIVRepository.ConvertHeading(rotation);
 
                 return string.Format(CultureInfo.InvariantCulture,
                     "{0:X8}|{1:X4}|{2:F3}|{3:F3}|{4:F3}|{5:F3}",
